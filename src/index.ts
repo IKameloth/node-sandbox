@@ -3,10 +3,20 @@ import http from 'http'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import routes from './routes'
+import cors from 'cors'
+import bodyParser from 'body-parser'
 
 dotenv.config()
 
+const corsOptions = {
+  origin: `http://localhost:${process.env.PORT}`
+}
+
 const app = express()
+
+app.use(cors(corsOptions))
+app.use(bodyParser.json())
+
 const server = http.createServer(app)
 
 server.listen(process.env.PORT, () => {

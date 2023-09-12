@@ -1,10 +1,14 @@
 import express from 'express'
-import usersRouter from './usersRouter'
+import usersRoutes from './usersRoutes'
+import productsRoutes from './productsRoutes'
+import authRoutes from './authRoutes'
 
 const router = express.Router()
 
 export default (): express.Router => {
-  usersRouter(router)
+  authRoutes(router)
+  usersRoutes(router)
+  productsRoutes(router)
 
   return router
 }

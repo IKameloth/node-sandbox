@@ -13,4 +13,4 @@ export const createProduct = (values: Record<string, any>) =>
   new ProductModel(values).save().then((product) => product.toObject())
 export const deleteProductById = (id: string) => ProductModel.findOneAndDelete({ _id: id })
 export const updateProductById = (id: string, values: Record<string, any>) =>
-  ProductModel.findOneAndUpdate({ _id: id, values })
+  ProductModel.findOneAndUpdate({ _id: id, values }, { new: true })
