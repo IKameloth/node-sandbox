@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import routes from "./routes";
 import cors from "cors";
 import bodyParser from "body-parser";
+import errorHandler from "./middlewares/errorHandler";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const app = express();
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
+app.use(errorHandler);
 
 const server = http.createServer(app);
 
