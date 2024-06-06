@@ -10,7 +10,7 @@ import errorHandler from "./middlewares/errorHandler";
 dotenv.config();
 
 const corsOptions = {
-  origin: `http://localhost:${process.env.PORT}`,
+  origin: `http://localhost:${process.env.FRONTEND_PORT}`,
 };
 
 const app = express();
