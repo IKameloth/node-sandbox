@@ -22,7 +22,6 @@ export const registerUser = async (
 ) => {
   try {
     const { email, username, password } = req.body;
-
     const { error } = schemaRegister.validate({ email, username, password });
 
     if (error) {
@@ -64,13 +63,13 @@ export const registerUser = async (
 
     const response = new ResponseBuilder<typeof user>()
       .setData(user)
-      .setMessage("Data fetched successfully")
+      .setMessage("data fetched successfully")
       .build();
 
     return res.status(200).json(response).end();
   } catch (error) {
     console.log("register user error =>", error);
-    return res.status(400).json(error);
+    return res.status(500).json(error);
   }
 };
 
@@ -81,17 +80,46 @@ export const login = async (req: express.Request, res: express.Response) => {
     const { error } = schemaLogin.validate({ email, password });
 
     if (error) {
+      const errorParsed = error.details.map((err) => {
+        return {
+          field: err.context?.key || null,
+          message: err.message,
+        };
+      });
+
+      const response = new ResponseBuilder()
+        .setStatus("error")
+        .setMessage("validation failed")
+        .setErrors(errorParsed)
+        .build();
+
       return res.status(400).json({
-        error: error.details[0].message,
+        error: response,
       });
     }
 
     const user = await getUserByEmail(email);
-    if (!user) return res.sendStatus(404);
+    if (!user) {
+      const failureResponse = new ResponseBuilder()
+        .setStatus("error")
+        .setMessage("validation failed")
+        .setErrors([{ field: null, message: "user not found" }])
+        .build();
+
+      return res.status(404).json(failureResponse);
+    }
 
     const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword)
-      return res.status(400).json({ error: "invalid email or password" });
+    if (!validPassword) {
+      // return res.status(400).json({ error: "invalid email or password" });
+      const failureResponse = new ResponseBuilder()
+        .setStatus("error")
+        .setMessage("validation failure")
+        .setErrors([{ field: null, message: "invalid email or password" }])
+        .build();
+
+      return res.status(400).json(failureResponse);
+    }
 
     const token = jwt.sign(
       {
@@ -99,12 +127,17 @@ export const login = async (req: express.Request, res: express.Response) => {
         username: user.username,
       },
       process.env.SECRET_TOKEN!,
-      { expiresIn: 30 * 30 }
+      { expiresIn: 3 * 60000 } // * 60000 => 1m
     );
 
-    return res.status(200).json({ user, token }).end();
+    const response = new ResponseBuilder()
+      .setMessage("data fetched successfully")
+      .setData({ user, token })
+      .build();
+
+    return res.status(200).json(response).end();
   } catch (error) {
     console.log("login error => ", error);
-    return res.sendStatus(400);
+    return res.sendStatus(500);
   }
 };
