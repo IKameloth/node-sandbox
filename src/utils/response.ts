@@ -4,7 +4,7 @@
 
 type Status = "success" | "error";
 type Data<T> = T | null;
-type Error = Array<{ field: string | null; message: string }>;
+type Error = Array<{ field?: string; message: string }>;
 type Pagination = {
   current_page: number;
   per_page: number;

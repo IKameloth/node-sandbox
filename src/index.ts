@@ -6,6 +6,7 @@ import routes from "./routes";
 import cors from "cors";
 import bodyParser from "body-parser";
 import errorHandler from "./middlewares/errorHandler";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ const app = express();
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(errorHandler);
+app.use(cookieParser());
 
 const server = http.createServer(app);
 
